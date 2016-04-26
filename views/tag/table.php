@@ -44,7 +44,7 @@ function tag_is_in_array($tag, $parentTags)
 	$all = Tag::find()->all();
 	
 	$wichtigkeitModel = Tag::findOne(1);
-	$dringlichkeitModel = Tag::findOne(4);
+	$dringlichkeitModel = Tag::findOne(10);
 	
 	$xAxisModel = $wichtigkeitModel;
 	$yAxisModel = $dringlichkeitModel;
