@@ -17,6 +17,7 @@ use yii\helpers\ArrayHelper;
 class Tag extends \yii\db\ActiveRecord
 {
 	public $editableParentTags = [];
+	public $cachedParentTags = [];
 	//public $editableChildTags = [];
 	
 	public function behaviors()

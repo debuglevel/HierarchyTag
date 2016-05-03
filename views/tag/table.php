@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 use app\models\Tag;
+use app\controllers\TagController;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\TagSearch */
@@ -30,6 +31,8 @@ function tag_is_in_array($tag, $parentTags)
 	return false;
 }
 
+list($allTags, $xAxisModel, $yAxisModel, $xAxisChildModels, $yAxisChildModels) = TagController::getAllTagsWithParentTags();
+
 ?>
 <div class="tag-table">
 
@@ -41,16 +44,16 @@ function tag_is_in_array($tag, $parentTags)
 	
 	<?php
 	
-	$all = Tag::find()->all();
+	//$allTags = Tag::find()->all();
 	
-	$wichtigkeitModel = Tag::findOne(1);
-	$dringlichkeitModel = Tag::findOne(10);
+	//$wichtigkeitModel = Tag::findOne(1);
+	//$dringlichkeitModel = Tag::findOne(10);
 	
-	$xAxisModel = $wichtigkeitModel;
-	$yAxisModel = $dringlichkeitModel;
+	//$xAxisModel = $wichtigkeitModel;
+	//$yAxisModel = $dringlichkeitModel;
 	
-	$xAxisChildModels = $xAxisModel->getChildTags()->all();
-	$yAxisChildModels = $yAxisModel->getChildTags()->all();
+	//$xAxisChildModels = $xAxisModel->getChildTags()->all();
+	//$yAxisChildModels = $yAxisModel->getChildTags()->all();
 	
 	?>
 	<table class="table table-striped table-bordered">
@@ -86,16 +89,19 @@ function tag_is_in_array($tag, $parentTags)
 						<td>
 						
 							<?php
-							foreach ($all as $tag)
-							{						
-								if (tag_is_in_array($xAxisChildModel, $tag->getParentTags()->all()) 
-									&& tag_is_in_array($yAxisChildModel, $tag->getParentTags()->all()))
+							foreach ($allTags as $tag)
+							{
+								//$parentTags = $tag->getParentTags()->all();
+								$parentTags = $tag->cachedParentTags;
+								if (tag_is_in_array($xAxisChildModel, $parentTags) 
+									&& tag_is_in_array($yAxisChildModel, $parentTags))
 								{
 									?>
 									<?= Html::a($tag->title, ['update', 'id' => $tag->tag_id], ['class' => 'btn btn-default']) ?>
 									
 									<?php
-									foreach ($tag->getParentTags()->all() as $subtag)
+									// skip Tags which are already used as Dimension on X- or Y-axis
+									foreach ($parentTags as $subtag)
 									{
 										if ($subtag->tag_id == $xAxisChildModel->tag_id || $subtag->tag_id == $yAxisChildModel->tag_id)
 										{

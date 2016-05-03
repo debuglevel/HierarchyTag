@@ -136,4 +136,59 @@ class TagController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+	
+	public function getAllTagsWithParentTags()
+	{
+		$allTags = Tag::find()->all();
+		
+		$xAxisModel = null;
+		$yAxisModel = null;
+		$xAxisChildModels = array();
+		$yAxisChildModels = array();
+		$xAxisModelID = 1;
+		$yAxisModelID = 10;
+		
+		// find tags of the X/Y-Axis
+		foreach ($allTags as $tag)
+		{
+			if ($tag->tag_id == $xAxisModelID)
+			{
+				$xAxisModel = $tag;
+			}
+			else if($tag->tag_id == $yAxisModelID)
+			{
+				$yAxisModel = $tag;
+			}
+			
+			// break if both models are found
+			if ($xAxisModel != null && $yAxisModel != null)
+			{
+				break;
+			}
+		}
+		
+		// set parent tags for each tag
+		foreach ($allTags as $tag)
+		{
+			$tag->cachedParentTags = $tag->getParentTags()->all();
+		}
+		
+		// find child tags of X/Y-Axis-tags
+		foreach ($allTags as $tag)
+		{
+			foreach ($tag->cachedParentTags as $parentTag)
+			{
+				if ($parentTag->tag_id == $xAxisModel->tag_id)
+				{
+					$xAxisChildModels[] = $tag;
+				}
+				else if($parentTag->tag_id == $yAxisModel->tag_id)
+				{
+					$yAxisChildModels[] = $tag;
+				}
+			}
+		}
+		
+		return array($allTags, $xAxisModel, $yAxisModel, $xAxisChildModels, $yAxisChildModels);
+	}
 }
