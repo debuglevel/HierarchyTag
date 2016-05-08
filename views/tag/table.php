@@ -1,9 +1,12 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\ArrayHelper;
 use yii\grid\GridView;
 use app\models\Tag;
 use app\controllers\TagController;
+use app\models\DimensionChooser;
+
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\TagSearch */
@@ -31,7 +34,10 @@ function tag_is_in_array($tag, $parentTags)
 	return false;
 }
 
-list($allTags, $xAxisModel, $yAxisModel, $xAxisChildModels, $yAxisChildModels) = TagController::getAllTagsWithParentTags();
+$dimensionChooser = new DimensionChooser();
+$dimensionChooser->load(Yii::$app->request->get());
+
+list($allTags, $xAxisModel, $yAxisModel, $xAxisChildModels, $yAxisChildModels) = TagController::getAllTagsWithParentTags($dimensionChooser);
 
 ?>
 <div class="tag-table">
@@ -41,6 +47,26 @@ list($allTags, $xAxisModel, $yAxisModel, $xAxisChildModels, $yAxisChildModels) =
     <p>
         <?= Html::a('Create Tag', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
+	
+	<?php
+	echo $this->render('_dimensionChooser', ['allTags' => $allTags]);
+	
+	//$dimensionTags = TagController::getDimensionTags($allTags);
+	
+	//$items = ArrayHelper::map($dimensionTags, 'tag_id', 'title');
+	//echo "X: ".Html::activeDropDownList(new Tag(), 'tag_id', $items);
+	//echo " | ";
+	//echo "Y: ".Html::activeDropDownList(new Tag(), 'tag_id', $items);
+	//echo "<br><br>";
+	
+	/*
+	foreach ($dimensionTags as $dimensionTag)
+	{
+		echo $dimensionTag->title."|";
+	}*/
+	
+	?>
+	
 	
 	<?php
 	

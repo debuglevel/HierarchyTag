@@ -137,7 +137,27 @@ class TagController extends Controller
         }
     }
 	
-	public function getAllTagsWithParentTags()
+	public function getDimensionTags($allTags)
+	{
+		$dimensionTags = array();
+		$dimensionMetaTagID = 28;
+		
+		foreach ($allTags as $tag)
+		{
+			foreach ($tag->cachedParentTags as $parentTag)
+			{
+				if ($parentTag->tag_id == $dimensionMetaTagID)
+				{
+					$dimensionTags[] = $tag;
+					break;
+				}
+			}
+		}
+		
+		return $dimensionTags;
+	}
+	
+	public function getAllTagsWithParentTags($dimensionChooser)
 	{
 		$allTags = Tag::find()->all();
 		
@@ -145,8 +165,10 @@ class TagController extends Controller
 		$yAxisModel = null;
 		$xAxisChildModels = array();
 		$yAxisChildModels = array();
-		$xAxisModelID = 1;
-		$yAxisModelID = 10;
+		$xAxisModelID = $dimensionChooser->xAxisModelID ? $dimensionChooser->xAxisModelID :  1;
+		$yAxisModelID = $dimensionChooser->yAxisModelID ? $dimensionChooser->yAxisModelID : 10;
+		//$xAxisModelID = 1;
+		//$yAxisModelID = 10;
 		
 		// find tags of the X/Y-Axis
 		foreach ($allTags as $tag)
